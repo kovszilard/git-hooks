@@ -9,7 +9,13 @@ lazy val root = (project in file("."))
   .enablePlugins(NativeImagePlugin)
   .settings(
     name := "git-hooks",
-    libraryDependencies += scalaTest % Test
+    libraryDependencies += scalaTest % Test,
+    libraryDependencies ++= Seq(zio, zioStreams),
+    // Compile / mainClass := Some("example.Hello"),
+    nativeImageOptions ++= List(
+      "--initialize-at-build-time",
+      "--no-fallback"
+      )
   )
 
 // See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
