@@ -6,6 +6,7 @@ ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
 lazy val root = (project in file("."))
+  .enablePlugins(NativeImagePlugin)
   .settings(
     name := "git-hooks",
     libraryDependencies += scalaTest % Test
