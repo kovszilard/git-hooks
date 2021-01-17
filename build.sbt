@@ -9,8 +9,9 @@ lazy val root = (project in file("."))
   .enablePlugins(NativeImagePlugin)
   .settings(
     name := "git-hooks",
-    libraryDependencies += scalaTest % Test,
     libraryDependencies ++= Seq(zio, zioStreams),
+    libraryDependencies ++= zioTest,
+    testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework"),
     // Compile / mainClass := Some("example.Hello"),
     nativeImageOptions ++= List(
       "--initialize-at-build-time",

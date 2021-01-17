@@ -2,6 +2,7 @@
 .vscode
 .bloop
 .bsp
+.idea
 target/
 project/project
 project/metals.sbt

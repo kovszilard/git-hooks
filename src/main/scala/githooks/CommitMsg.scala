@@ -63,6 +63,18 @@ object HookCommitMsg extends App {
     }
   )
 
+  val rule4 = CommitMsg(
+    "Do not end the subject line with a period",
+    { message =>
+      UIO {
+        message.split("\n").headOption.map(_.trim.last match {
+        case '.' | '!' | '?' => false
+        case _ => true
+      }).getOrElse(false)
+      }
+    }
+  )
+
   val rules = rule1.andThen(rule2).andThen(rule3)
   
 }
