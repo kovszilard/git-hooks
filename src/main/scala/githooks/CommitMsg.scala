@@ -15,15 +15,16 @@ object HookCommitMsg extends App {
 
   def printArgs(args: List[String]) =
     for {
-      _ <- putStrLn("Arguments given to this hook:")
-      _ <- putStrLn(args.zipWithIndex.map{ case (arg, i) => s"$i: $arg"}.mkString("\n"))
+//      _ <- putStrLn("Arguments given to this hook:")
+//      _ <- putStrLn(args.zipWithIndex.map{ case (arg, i) => s"$i: $arg"}.mkString("\n"))
       workDir <- workDirPath
       path = s"$workDir/${args.head}"
-      _ <- putStrLn(s"commit message path is: $path")
+//      _ <- putStrLn(s"commit message path is: $path")
       msg <- readTextFile(path)
-      // _ <- putStrLn(msg)
       evaluated <- GitHook.evaluate2(rules, msg)
+      _ <- putStrLn("")
       _ <- putStrLn(evaluated.mkString("\n"))
+      _ <- putStrLn("")
     } yield exitCode2(evaluated)
 
 
