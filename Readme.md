@@ -6,23 +6,20 @@
 ## Sources
 [How to Write a Git Commit Message](https://chris.beams.io/posts/git-commit/)
 
-## Rules
+[githooks.com](https://githooks.com/)
 
-1. Separate subject from body with a blank line
-2. Limit the subject line to 50 characters
-3. Capitalize the subject line
-4. Do not end the subject line with a period
-5. Use the imperative mood in the subject line
-6. Wrap the body at 72 characters
-7. Use the body to explain what and why vs. how
+## Rules to implement
+
+### Rules for better commit messages
+
+- [x] Separate subject from body with a blank line
+- [x] Limit the subject line to 50 characters
+- [x] Capitalize the subject line
+- [x] Do not end the subject line with a period
+- [ ] Use the imperative mood in the subject line ("If applied, this commit will ...")
+- [x] Wrap the body at 72 characters
+- [ ] Use the body to explain what and why vs. how
 
 ### Notes for 5.
 
 A properly formed Git commit subject line should always be able to complete the following sentence:
-
-If applied, this commit will ...
-
-
-### Body
-
-Explain what and why vs. how.
