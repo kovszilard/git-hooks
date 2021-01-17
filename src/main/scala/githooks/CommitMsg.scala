@@ -34,10 +34,10 @@ object HookCommitMsg extends App {
       UIO{
           val lines = message
             .split("\n")
-            .takeWhile(_.startsWith("------------------------ >8 ------------------------"))
-            .filterNot(_.trim().startsWith("#"))
+            .takeWhile(!_.startsWith("# ------------------------ >8 ------------------------"))
+            .filterNot(_.startsWith("#"))
           lines.size match {
-              case s if s >= 2 => lines(1) == ""
+              case s if s >= 2 => (lines(0).trim != "") && (lines(1) == "")
               case _ => true
           }
       }
