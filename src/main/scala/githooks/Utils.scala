@@ -20,4 +20,11 @@ object Utils {
   }
 
   val workDirPath = runComand("git worktree list --porcelain").map(a => a.split("\n").head.split(" ")(1))
+
+  def filterCommitMessage(message: String): String =
+    message
+      .split("\n")
+      .takeWhile(!_.startsWith("# ------------------------ >8 ------------------------"))
+      .filterNot(_.startsWith("#"))
+      .mkString("\n")
 }

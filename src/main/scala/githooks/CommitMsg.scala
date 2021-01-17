@@ -13,33 +13,30 @@ object HookCommitMsg extends App {
   def run(args: List[String]): zio.URIO[zio.ZEnv,ExitCode] = 
     printArgs(args).orDie
 
-  def printArgs(args: List[String]) = 
-  for {
-    _ <- putStrLn("Arguments given to this hook:")
-    _ <- putStrLn(args.zipWithIndex.map{ case (arg, i) => s"$i: $arg"}.mkString("\n"))
-    workDir <- workDirPath
-    path = s"$workDir/${args.head}"
-    _ <- putStrLn(s"commit message path is: $path")
-    msg <- readTextFile(path)
-    // _ <- putStrLn(msg)
-    evaluated <- GitHook.evaluate2(rules, msg)
-    _ <- putStrLn(evaluated.mkString("\n"))
-  } yield exitCode2(evaluated)
+  def printArgs(args: List[String]) =
+    for {
+      _ <- putStrLn("Arguments given to this hook:")
+      _ <- putStrLn(args.zipWithIndex.map{ case (arg, i) => s"$i: $arg"}.mkString("\n"))
+      workDir <- workDirPath
+      path = s"$workDir/${args.head}"
+      _ <- putStrLn(s"commit message path is: $path")
+      msg <- readTextFile(path)
+      // _ <- putStrLn(msg)
+      evaluated <- GitHook.evaluate2(rules, msg)
+      _ <- putStrLn(evaluated.mkString("\n"))
+    } yield exitCode2(evaluated)
 
-  
-    
+
+
   val rule1 = CommitMsg(
     "Separate subject from body with a blank line", 
     { message => 
       UIO{
-          val lines = message
-            .split("\n")
-            .takeWhile(!_.startsWith("# ------------------------ >8 ------------------------"))
-            .filterNot(_.startsWith("#"))
-          lines.size match {
-              case s if s >= 2 => (lines(0).trim != "") && (lines(1) == "")
-              case _ => true
-          }
+        val lines = filterCommitMessage(message).split("\n")
+        lines.size match {
+            case s if s >= 2 => (lines(0).trim != "") && (lines(1) == "")
+            case _ => true
+        }
       }
     }
   )
@@ -47,7 +44,13 @@ object HookCommitMsg extends App {
   val rule2 = CommitMsg(
     "Limit the subject line to 50 characters",
     { message => 
-      UIO(message.split("\n").headOption.map(_.size <= 50).getOrElse(false))
+      UIO(
+        filterCommitMessage(message)
+          .split("\n")
+          .headOption
+          .map(_.size <= 50)
+          .getOrElse(false)
+      )
     }
   )
 
@@ -56,7 +59,7 @@ object HookCommitMsg extends App {
     { message => 
       UIO{
         (for {
-          title <- message.split("\n").headOption
+          title <- filterCommitMessage(message).split("\n").headOption
           firstChar <- title.headOption
         } yield firstChar.isUpper).getOrElse(false)
       }
@@ -67,14 +70,25 @@ object HookCommitMsg extends App {
     "Do not end the subject line with a period",
     { message =>
       UIO {
-        message.split("\n").headOption.map(_.trim.last match {
-        case '.' | '!' | '?' => false
+        filterCommitMessage(message).split("\n").headOption.map(_.trim.lastOption match {
+        case Some('.') | Some('!') | Some('?') => false
         case _ => true
       }).getOrElse(false)
       }
     }
   )
 
-  val rules = rule1.andThen(rule2).andThen(rule3)
+  val rule6 = CommitMsg(
+    "Wrap the body at 72 characters",
+    { message =>
+      UIO {
+         !filterCommitMessage(message)
+           .split("\n")
+           .exists(s => s.size > 72)
+      }
+    }
+  )
+
+  val rules = rule1.andThen(rule2).andThen(rule3).andThen(rule4).andThen(rule6)
   
 }
