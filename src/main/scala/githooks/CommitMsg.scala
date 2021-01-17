@@ -22,7 +22,6 @@ object HookCommitMsg extends App {
 //      _ <- putStrLn(s"commit message path is: $path")
       msg <- readTextFile(path)
       evaluated <- GitHook.evaluate2(rules, msg)
-      _ <- putStrLn("")
       _ <- putStrLn(evaluated.mkString("\n"))
       _ <- putStrLn("")
     } yield exitCode2(evaluated)
